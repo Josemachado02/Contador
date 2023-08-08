@@ -3,7 +3,7 @@ unit Principal;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls;
 
 type
@@ -22,7 +22,7 @@ type
     procedure btnStopClick(Sender: TObject);
   private
     { Private declarations }
-    FTempo: Integer;
+    FTempo,
     FHoraInicio: TDateTime;
     procedure HabilitarComponentes(pHabilitaPlay, pHabilitaPause, pHabilitaTimer : Boolean);
   public
@@ -33,7 +33,8 @@ var
   frmPrincipal: TfrmPrincipal;
 
 implementation
-
+uses
+  DateUtils, System.SysUtils;
 {$R *.dfm}
 
 procedure TfrmPrincipal.btnPlayClick(Sender: TObject);
@@ -46,7 +47,6 @@ begin
 
   FTempo := 0;
   HabilitarComponentes(False, True, True);
-
   FHoraInicio := Now();
 end;
 
@@ -54,16 +54,11 @@ procedure TfrmPrincipal.btnStopClick(Sender: TObject);
 var
   lTempoGasto,
   lFormatacaoHora: string;
-  lHora,
-  lMinuto,
-  lSegundo,
-  lMilesimo: Word;
 begin
   lTempoGasto := lblTempo.Caption;
-  lblTempo.Caption := '';
+  lblTempo.Caption := '00:00:00';
 
-  DecodeTime(FHoraInicio, lHora, lMinuto, lSegundo, lMilesimo);
-  lFormatacaoHora := Format('%02d:%02d:%02d', [lHora, lMinuto, lSegundo]);
+  lFormatacaoHora := FormatDateTime('hh:mm:ss', FHoraInicio);
 
   mmoResultado.Lines.Add(edtTarefa.Text + #13#10 + '  Hora iniciada: ' + lFormatacaoHora + #13#10 + '  Tempo executando: ' + lTempoGasto + #13#10);
   HabilitarComponentes(True, False, False);
@@ -71,8 +66,8 @@ end;
 
 procedure TfrmPrincipal.Timer1Timer(Sender: TObject);
 begin
-  inc(FTempo);
-  lblTempo.Caption := IntToStr(FTempo);
+  FTempo := incSecond(FTempo);
+  lblTempo.Caption := FormatDateTime('hh:mm:ss', FTempo);
 end;
 
 procedure TfrmPrincipal.HabilitarComponentes(pHabilitaPlay, pHabilitaPause, pHabilitaTimer : Boolean);

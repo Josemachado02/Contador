@@ -36,6 +36,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 190
     Width = 42
     Height = 15
+    AutoSize = False
     Caption = '00:00:00'
   end
   object lblTitulo: TLabel
